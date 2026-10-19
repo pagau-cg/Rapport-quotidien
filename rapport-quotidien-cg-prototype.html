@@ -431,11 +431,11 @@ const lots = [
   {code:'C-06.2-PLOM', nom:'Plomberie profonde', zone:'Zone 6.2/C-D', type:'st', sous:'Plomberie Tremblay & Fils', unite:'ml', ref:110, avant:62, jour:14, budget:54000},
 ];
 const crew = [
-  {nom:'Kevin Simard', role:'Journalier', present:true, h:10, lot:'C-06.1-REMB'},
-  {nom:'Dave Gagné', role:'Opérateur', present:true, h:10, lot:'C-06.1-REMB'},
-  {nom:'Steeve Bouchard', role:'Journalier', present:true, h:9, lot:'C-06.1-DRAIN'},
-  {nom:'Yannick Côté', role:'Charpentier', present:true, h:9, lot:'C-06.1-BETON'},
-  {nom:'Jonathan Villeneuve', role:'Journalier', present:false, h:0, lot:''},
+  {nom:'Kevin Simard', role:'Journalier', present:true, acts:[{lot:'C-06.1-REMB',h:6},{lot:'C-06.1-DRAIN',h:4}]},
+  {nom:'Dave Gagné', role:'Opérateur', present:true, acts:[{lot:'C-06.1-REMB',h:10}]},
+  {nom:'Steeve Bouchard', role:'Journalier', present:true, acts:[{lot:'C-06.1-DRAIN',h:9}]},
+  {nom:'Yannick Côté', role:'Charpentier', present:true, acts:[{lot:'C-06.1-BETON',h:9}]},
+  {nom:'Jonathan Villeneuve', role:'Journalier', present:false, acts:[]},
 ];
 const subs = [
   {nom:'Coffrage Rondeau', scope:'Coffrage · Zone 6.1', contrat:'ST-102', present:true, n:8},
