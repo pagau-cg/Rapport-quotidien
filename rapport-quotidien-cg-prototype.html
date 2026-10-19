@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rapport quotidien — 23-003 Camions Avantage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  --pine:#34702A;
+  --pine-2:#43892F;
+  --pine-soft:#E7F1E2;
+  --amber:#5BB031;
+  --amber-deep:#357023;
+  --concrete:#ECEBE6;
+  --surface:#FFFFFF;
+  --surface-2:#F4F4EF;
+  --ink:#1F1E1C;
+  --muted:#6C6F68;
+  --line:#DAD8D0;
+  --line-strong:#C6C4BB;
+  --ok:#2F7D45;
+  --warn:#C6820A;
+  --bad:#B23A2E;
+  --st:#4A5A78;
+  --radius:14px;
+  --tap:48px;
+  --maxw:640px;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 120px);-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--concrete);
+  color:var(--ink);
+  font-size:16px;line-height:1.4;
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+:root:not([data-theme="light"]){
+  @media (prefers-color-scheme:dark){
+    --pine:#AED69F;--pine-2:#8CCB77;--pine-soft:#22311C;
+    --amber:#86CF63;--amber-deep:#86CF63;
+    --concrete:#121410;--surface:#1C1F19;--surface-2:#232619;
+    --ink:#ECEFE6;--muted:#9A9E93;--line:#333829;--line-strong:#434838;
+    --ok:#63B87A;--warn:#E8A93A;--bad:#E27366;--st:#8FA0C0;
+  }
+}
+:root[data-theme="dark"]{
+  --pine:#AED69F;--pine-2:#8CCB77;--pine-soft:#22311C;
+  --amber:#86CF63;--amber-deep:#86CF63;
+  --concrete:#121410;--surface:#1C1F19;--surface-2:#232619;
+  --ink:#ECEFE6;--muted:#9A9E93;--line:#333829;--line-strong:#434838;
+  --ok:#63B87A;--warn:#E8A93A;--bad:#E27366;--st:#8FA0C0;
+}
+.wrap{max-width:var(--maxw);margin:0 auto}
+
+/* ---------- Header instrument ---------- */
+header{
+  position:sticky;top:0;z-index:40;
+  background:var(--pine);color:#F3F1E8;
+  padding-top:calc(10px + env(safe-area-inset-top,0px));
+  box-shadow:0 2px 0 rgba(0,0,0,.18);
+}
+:root[data-theme="dark"] header,
+:root:not([data-theme="light"]) header{background:#16300F}
+.hbar{max-width:var(--maxw);margin:0 auto;padding:0 16px 12px}
+.brand{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-top:2px}
+.brand svg{flex:none}
+.brand span{font-size:.7rem;font-weight:700;letter-spacing:1.6px;color:#CFE6C4}
+.brand b{font-weight:800;color:#fff}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.proj{font-weight:800;font-size:1.05rem;letter-spacing:.2px;line-height:1.1}
+.proj small{display:block;font-weight:500;font-size:.72rem;color:#B8C9B4;letter-spacing:.4px;margin-top:2px}
+.tbtn{width:38px;height:38px;border:none;border-radius:10px;background:rgba(255,255,255,.12);color:#F3F1E8;font-size:1.05rem;cursor:pointer}
+.tbtn:active{transform:scale(.94)}
+.gauges{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px;margin-top:12px}
+.gauge{background:rgba(255,255,255,.07);border-radius:10px;padding:8px 10px}
+.gauge .lbl{font-size:.64rem;letter-spacing:.5px;color:#AFC3AC;text-transform:uppercase;font-weight:600}
+.gauge .val{font-weight:800;font-size:1.28rem;line-height:1.05;margin-top:2px}
+.gauge.today .val{color:#C7ECB5}
+.pbar{height:7px;border-radius:4px;background:rgba(255,255,255,.14);margin-top:7px;overflow:hidden;display:flex}
+.pbar i{display:block;height:100%}
+.pbar .done{background:#9FD3A8}
+.pbar .today{background:var(--amber)}
+.hmeta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:11px;font-size:.74rem;color:#CFDCCB}
+.hmeta b{color:#fff;font-weight:700}
+.hmeta .dot{color:var(--amber)}
+
+/* ---------- Sections ---------- */
+main{max-width:var(--maxw);margin:0 auto;padding:14px 12px 132px}
+details.sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
+details.sec[open]{border-color:var(--line-strong)}
+summary.sh{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px 15px;font-weight:700;font-size:1.02rem;min-height:var(--tap)}
+summary.sh::-webkit-details-marker{display:none}
+.chev{margin-left:auto;color:var(--muted);transition:transform .18s ease;font-size:.9rem}
+details[open] .chev{transform:rotate(90deg)}
+.sicon{width:30px;height:30px;border-radius:8px;background:var(--pine-soft);color:var(--pine-2);display:grid;place-items:center;font-size:.95rem;font-weight:800;flex:none}
+.scount{font-size:.72rem;font-weight:700;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);padding:1px 8px;border-radius:20px}
+.sbody{padding:4px 13px 15px}
+.hint{font-size:.8rem;color:var(--muted);margin:2px 2px 12px}
+.src{display:flex;gap:11px;align-items:flex-start;background:var(--pine-soft);border-radius:11px;padding:11px 12px;font-size:.82rem;color:var(--ink);margin:2px 2px 12px;line-height:1.35}
+.src-ic{font-size:1.15rem;color:var(--pine-2);font-weight:800;flex:none;line-height:1.15}
+.src b{font-weight:800}
+.src-zones{display:block;color:var(--pine-2);font-weight:700;margin-top:5px}
+.wbspick{margin-top:10px}
+.wbspick.on{border:1px solid var(--line-strong);border-radius:11px;padding:4px 10px 8px;background:var(--surface-2)}
+.pick-h{font-size:.74rem;font-weight:700;color:var(--muted);padding:9px 2px 3px}
+.pick-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-top:1px solid var(--line)}
+.pick-row:first-of-type{border-top:none}
+.pick-row .lot-sub{font-size:.74rem}
+.pick-act{margin-left:auto;flex:none;border:1.5px solid var(--pine-2);background:transparent;color:var(--pine-2);font-family:inherit;font-weight:700;border-radius:9px;height:40px;padding:0 15px;cursor:pointer}
+.pick-act:active{background:var(--pine-soft)}
+.pick-empty{padding:12px 2px;color:var(--muted);font-size:.82rem}
+
+/* ---------- Lot cards ---------- */
+.lot{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:11px;background:var(--surface)}
+.lot.locked{opacity:.85}
+.lot-top{display:flex;align-items:flex-start;gap:8px}
+.lot-name{font-weight:700;font-size:1rem;line-height:1.15}
+.lot-code{font-size:.7rem;color:var(--muted);font-weight:600;letter-spacing:.4px;margin-bottom:3px}
+.tag{font-size:.62rem;font-weight:800;letter-spacing:.4px;padding:3px 7px;border-radius:6px;text-transform:uppercase;white-space:nowrap;flex:none}
+.tag.auto{background:var(--pine-soft);color:var(--pine-2)}
+.tag.st{background:#E7EBF3;color:var(--st)}
+:root[data-theme="dark"] .tag.st,:root:not([data-theme="light"]) .tag.st{background:#28304099}
+.lot-sub{font-size:.76rem;color:var(--muted);margin-top:1px}
+.lbar{height:10px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);margin:11px 0 8px;overflow:hidden;display:flex}
+.lbar i{height:100%}
+.lbar .done{background:var(--pine-2)}
+.lbar .today{background:var(--amber)}
+.lstat{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:11px}
+.lstat b{color:var(--ink);font-weight:700}
+.entry{display:flex;align-items:center;gap:9px;background:var(--surface-2);border-radius:10px;padding:8px}
+.entry .qlbl{font-size:.74rem;color:var(--muted);font-weight:600;flex:1;line-height:1.15}
+.stp{display:flex;align-items:center;gap:0;border:1px solid var(--line-strong);border-radius:10px;overflow:hidden;background:var(--surface)}
+.stp button{width:44px;height:46px;border:none;background:var(--surface);color:var(--pine-2);font-size:1.5rem;font-weight:700;cursor:pointer;line-height:1}
+.stp button:active{background:var(--pine-soft)}
+.stp input{width:66px;height:46px;border:none;border-left:1px solid var(--line);border-right:1px solid var(--line);background:transparent;text-align:center;font-family:inherit;font-size:1.15rem;font-weight:700;color:var(--ink);-moz-appearance:textfield}
+.stp input::-webkit-outer-spin-button,.stp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.unit{font-size:.72rem;color:var(--muted);font-weight:600;min-width:44px}
+.lfoot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line)}
+.va{font-size:.82rem;color:var(--muted)}
+.va b{color:var(--ink);font-weight:800;font-size:.95rem}
+.va .add{color:var(--amber-deep);font-weight:800}
+:root[data-theme="dark"] .va .add,:root:not([data-theme="light"]) .va .add{color:var(--amber)}
+.ipc{display:flex;align-items:center;gap:6px;font-size:.74rem;font-weight:700}
+.ipc .pill{padding:3px 9px;border-radius:20px;font-weight:800;font-size:.8rem}
+.ipc .pill.ok{background:rgba(47,125,69,.14);color:var(--ok)}
+.ipc .pill.warn{background:rgba(198,130,10,.16);color:var(--warn)}
+.ipc .pill.bad{background:rgba(178,58,46,.14);color:var(--bad)}
+.ipc small{color:var(--muted);font-weight:600}
+
+/* ---------- Effectif ---------- */
+.crew{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px solid var(--line)}
+.crew:last-child{border-bottom:none}
+.chk{width:30px;height:30px;border-radius:8px;border:2px solid var(--line-strong);background:var(--surface);flex:none;display:grid;place-items:center;cursor:pointer;color:transparent;font-weight:800}
+.chk.on{background:var(--pine-2);border-color:var(--pine-2);color:#fff}
+.cn{flex:1;min-width:0}
+.cn b{font-weight:600;font-size:.95rem}
+.cn small{display:block;color:var(--muted);font-size:.74rem}
+.chours{display:flex;align-items:center;gap:5px}
+.chours input{width:52px;height:40px;border:1px solid var(--line-strong);border-radius:9px;text-align:center;font-family:inherit;font-weight:700;font-size:1rem;background:var(--surface);color:var(--ink)}
+.chours span{font-size:.72rem;color:var(--muted);font-weight:600}
+.csel{width:100%;margin-top:7px;height:40px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:.82rem;padding:0 9px}
+.crewrow{flex-wrap:wrap}
+.absent .cn b{color:var(--muted);text-decoration:line-through}
+.ctot{display:flex;justify-content:space-between;background:var(--pine-soft);border-radius:10px;padding:11px 13px;margin-top:12px;font-weight:700}
+.ctot span{color:var(--pine-2)}
+
+/* ---------- Simple rows / subs / deliveries ---------- */
+.simple{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line)}
+.simple:last-child{border:none}
+.simple .qty{margin-left:auto;font-weight:700}
+.mini-in{width:60px;height:42px;border:1px solid var(--line-strong);border-radius:9px;text-align:center;font-family:inherit;font-weight:700;font-size:1rem;background:var(--surface);color:var(--ink)}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:5px}
+.field input[type=text],.field textarea,.field select,.field input[type=time]{
+  width:100%;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface-2);
+  color:var(--ink);font-family:inherit;font-size:.95rem;padding:11px;
+}
+.field textarea{min-height:74px;resize:vertical}
+.two{display:flex;gap:10px}.two>*{flex:1}
+.toggle-row{display:flex;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.toggle-row:last-child{border:none}
+.toggle-row .lab{flex:1;font-size:.92rem;font-weight:500}
+.sw{width:50px;height:29px;border-radius:20px;background:var(--line-strong);position:relative;flex:none;cursor:pointer;transition:background .16s}
+.sw i{position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;background:#fff;transition:left .16s}
+.sw.on{background:var(--pine-2)}.sw.on i{left:24px}
+.addbtn{width:100%;height:var(--tap);border:1.5px dashed var(--line-strong);background:transparent;color:var(--pine-2);border-radius:11px;font-family:inherit;font-weight:700;font-size:.92rem;cursor:pointer;margin-top:4px}
+.addbtn:active{background:var(--pine-soft)}
+.acc-note{display:flex;gap:11px;align-items:flex-start;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:11px;padding:12px;font-size:.82rem;color:var(--muted)}
+.acc-note b{color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.chip{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:7px}
+.chip .x{color:var(--muted);cursor:pointer;font-weight:800}
+.tagline{font-size:.72rem;color:var(--muted);margin-top:6px}
+
+/* ---------- Submit bar ---------- */
+.subbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:var(--surface);border-top:1px solid var(--line-strong);
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -6px 20px rgba(0,0,0,.08);
+}
+.subbar .inner{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;gap:12px}
+.subbar .sum{flex:1;line-height:1.15}
+.subbar .sum .t{font-size:.7rem;color:var(--muted);font-weight:600}
+.subbar .sum .v{font-weight:800;font-size:1.02rem}
+.cta{border:none;border-radius:12px;background:var(--pine-2);color:#fff;font-family:inherit;font-weight:800;font-size:1rem;padding:0 20px;height:52px;cursor:pointer;letter-spacing:.2px}
+.cta:active{transform:translateY(1px)}
+.cta.locked{background:var(--ok);color:#fff}
+
+/* ---------- Signature sheet ---------- */
+.sheet-bg{position:fixed;inset:0;background:rgba(15,20,12,.55);z-index:60;display:none;align-items:flex-end}
+.sheet-bg.on{display:flex}
+.sheet{background:var(--surface);width:100%;max-width:var(--maxw);margin:0 auto;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));animation:up .22s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
+.sheet h3{margin:2px 0 3px;font-size:1.15rem}
+.sheet p{margin:0 0 14px;font-size:.84rem;color:var(--muted)}
+.sigpad{border:1.5px solid var(--line-strong);border-radius:12px;background:var(--surface-2);height:150px;touch-action:none;display:block;width:100%}
+.sigrow{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.link{background:none;border:none;color:var(--pine-2);font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer}
+.sheet .cta{width:100%;margin-top:14px;height:54px}
+.recap{background:var(--pine-soft);border-radius:11px;padding:12px;margin:14px 0 4px;font-size:.84rem}
+.recap div{display:flex;justify-content:space-between;padding:3px 0}
+.recap b{font-weight:800}
+.locked-note{display:none;align-items:center;gap:10px;background:rgba(47,125,69,.12);border:1px solid rgba(47,125,69,.3);color:var(--ok);border-radius:11px;padding:12px;font-weight:700;font-size:.9rem;margin-bottom:12px}
+.locked-note.on{display:flex}
+.readonly input,.readonly button,.readonly .chk,.readonly .sw,.readonly textarea,.readonly select{pointer-events:none}
+.readonly .stp,.readonly .addbtn{opacity:.5}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hbar">
+    <div class="brand"><svg width="20" height="22" viewBox="0 0 22 24" aria-hidden="true"><polygon points="11,1 21,6 11,11 1,6" fill="#8BC47B"/><polygon points="1,6 11,11 11,23 1,18" fill="#4E9A3D"/><polygon points="21,6 11,11 11,23 21,18" fill="#34702A"/></svg><span>CONSTRUCTION <b>GAUTHIER</b></span></div>
+    <div class="hrow">
+      <div class="proj">23-003 · Camions Avantage
+        <small id="hdate">Lundi 21 septembre 2026 · Quart de jour</small>
+      </div>
+      <button class="tbtn" id="theme" aria-label="Thème">◐</button>
+    </div>
+    <div class="gauges">
+      <div class="gauge">
+        <div class="lbl">Avancement projet</div>
+        <div class="val"><span id="gPct">0</span>%</div>
+        <div class="pbar"><i class="done" id="gDone"></i><i class="today" id="gToday"></i></div>
+      </div>
+      <div class="gauge today">
+        <div class="lbl">Aujourd'hui</div>
+        <div class="val" id="gDay">+0&nbsp;%</div>
+      </div>
+      <div class="gauge">
+        <div class="lbl">Productivité (IPC)</div>
+        <div class="val" id="gIpc">—</div>
+      </div>
+    </div>
+    <div class="hmeta">
+      <span>Heures CG : <b id="gHrs">0</b> h</span>
+      <span class="dot">•</span>
+      <span>Effectif : <b id="gCrew">0</b></span>
+      <span class="dot">•</span>
+      <span>Lots mis à jour : <b id="gLotsUp">0</b></span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+
+  <div class="locked-note" id="lockNote">✓ Rapport soumis et verrouillé. Le chargé de projet peut le rouvrir.</div>
+
+  <!-- AVANCEMENT (cœur) -->
+  <details class="sec" open>
+    <summary class="sh"><span class="sicon">▤</span> Avancement des travaux <span class="scount" id="lotCount">0 actifs</span><span class="chev">▶</span></summary>
+    <div class="sbody">
+      <div class="src">
+        <span class="src-ic">⌗</span>
+        <div>Lots tirés du <b>WBS du projet, défini dans Somtech</b>. Seuls les <b>comptes de contrôle des zones actives</b> sont présélectionnés ici, pas tout le WBS.<span class="src-zones" id="srcZones"></span></div>
+      </div>
+      <p class="hint">Entre la quantité posée <b>aujourd'hui</b> pour chaque lot. Le %, la valeur acquise et la productivité se calculent tout seuls.</p>
+      <div id="lots"></div>
+      <button class="addbtn" id="addLot">+ Activer un autre lot du WBS</button>
+      <div id="wbsPick" class="wbspick"></div>
+    </div>
+  </details>
+
+  <!-- EFFECTIF -->
+  <details class="sec" open>
+    <summary class="sh"><span class="sicon">☰</span> Effectif du jour <span class="scount" id="crewCount">0 présents</span><span class="chev">▶</span></summary>
+    <div class="sbody">
+      <div class="src">
+        <span class="src-ic">⌗</span>
+        <div>Travailleurs <b>affectés à ce projet via l'affectation Somtech</b> (identités et rôles de <b>Ma Place RH</b>). Confirme la présence et les heures.</div>
+      </div>
+      <p class="hint">Ce total d'heures sert à valider les feuilles de temps des travailleurs avant la paye.</p>
+      <div id="crew"></div>
+      <div class="ctot"><span>Total heures CG</span><span id="crewHrs">0 h</span></div>
+    </div>
+  </details>
+
+  <!-- SOUS-TRAITANTS -->
+  <details class="sec">
+    <summary class="sh"><span class="sicon">⚑</span> Sous-traitants sur le chantier <span class="scount" id="subCount">0</span><span class="chev">▶</span></summary>
+    <div class="sbody">
+      <div class="src">
+        <span class="src-ic">⌗</span>
+        <div>Liste des <b>contrats de sous-traitance octroyés</b>, provenant de <b>Maestro</b>. Coche ceux présents aujourd'hui et indique l'effectif.</div>
+      </div>
+      <div id="subs"></div>
+    </div>
+  </details>
+
+  <!-- GENERAL -->
+  <details class="sec">
+    <summary class="sh"><span class="sicon">✦</span> Général et météo<span class="chev">▶</span></summary>
+    <div class="sbody">
+      <div class="two">
+        <div class="field"><label>Début</label><input type="time" value="07:00"></div>
+        <div class="field"><label>Fin</label><input type="time" value="16:00"></div>
+      </div>
+      <div class="two">
+        <div class="field"><label>Météo</label>
+          <select><option>Dégagé, 18 °C</option><option>Nuageux, 14 °C</option><option>Pluie, 11 °C</option><option>Neige</option></select>
+        </div>
+        <div class="field"><label>Vent</label>
+          <select><option>Faible</option><option>Modéré</option><option>Fort</option></select>
+        </div>
+      </div>
+      <div class="field"><label>Note du contremaître</label>
+        <textarea placeholder="Faits saillants de la journée, à surveiller demain, impacts possibles."></textarea>
+      </div>
+    </div>
+  </details>
+
+  <!-- SST -->
+  <details class="sec">
+    <summary class="sh"><span class="sicon">＋</span> Santé et sécurité<span class="chev">▶</span></summary>
+    <div class="sbody">
+      <div class="toggle-row"><span class="lab">Accueil de nouveaux travailleurs</span><div class="sw" onclick="this.classList.toggle('on')"><i></i></div></div>
+      <div class="toggle-row"><span class="lab">Pause / réunion sécurité tenue</span><div class="sw on" onclick="this.classList.toggle('on')"><i></i></div></div>
+      <div class="toggle-row"><span class="lab">Incident ou presque-incident</span><div class="sw" onclick="this.classList.toggle('on')"><i></i></div></div>
+      <div class="field" style="margin-top:12px"><label>Note SST</label><textarea placeholder="Points de sécurité, inspections, correctifs."></textarea></div>
+    </div>
+  </details>
+
+  <!-- DEFICIENCES -->
+  <details class="sec">
+    <summary class="sh"><span class="sicon">!</span> Déficiences et non-conformités <span class="scount">0</span><span class="chev">▶</span></summary>
+    <div class="sbody">
+      <p class="hint">Tout élément à corriger part en suivi avec notification.</p>
+      <button class="addbtn" onclick="alert('Prototype : consigner une déficience avec photo et suivi.')">+ Consigner une déficience</button>
+    </div>
+  </details>
+
+  <!-- LIVRAISONS -->
+  <details class="sec">
+    <summary class="sh"><span class="sicon">▦</span> Livraisons reçues <span class="scount">1</span><span class="chev">▶</span></summary>
+    <div class="sbody">
+      <div class="chips">
+        <span class="chip">Béton — 6 m³ · billet #4471 <span class="x" onclick="this.parentElement.remove()">✕</span></span>
+      </div>
+      <button class="addbtn" style="margin-top:11px" onclick="alert('Prototype : ajouter un bon de livraison (no billet, heure, lien appro).')">+ Ajouter une livraison</button>
+    </div>
+  </details>
+
+  <!-- PHOTOS -->
+  <details class="sec">
+    <summary class="sh"><span class="sicon">◱</span> Photos <span class="scount">3</span><span class="chev">▶</span></summary>
+    <div class="sbody">
+      <div class="acc-note">
+        <span style="font-size:1.3rem">↗</span>
+        <div>Les photos prises ici sont <b>rattachées à ACC</b>, pas stockées comme données dans l'app. Le rapport garde le lien, ACC garde le fichier.</div>
+      </div>
+      <button class="addbtn" style="margin-top:11px" onclick="alert('Prototype : prise de photo → dépôt ACC, lien conservé.')">＋ Prendre une photo</button>
+    </div>
+  </details>
+
+</main>
+
+<div class="subbar">
+  <div class="inner">
+    <div class="sum">
+      <div class="t">Avancement du projet</div>
+      <div class="v"><span id="barPct">0</span>&nbsp;%</div>
+    </div>
+    <button class="cta" id="submit">Soumettre le rapport</button>
+  </div>
+</div>
+
+<!-- Signature -->
+<div class="sheet-bg" id="sheetbg">
+  <div class="sheet">
+    <h3>Soumettre et verrouiller</h3>
+    <p>Signe pour confirmer le rapport du jour. Une fois soumis, il est verrouillé.</p>
+    <div class="recap">
+      <div><span>Avancement projet</span><b id="rPct">0 %</b></div>
+      <div><span>Progression aujourd'hui</span><b id="rDay">+0 %</b></div>
+      <div><span>Heures CG à valider</span><b id="rHrs">0 h</b></div>
+      <div><span>Lots mis à jour</span><b id="rLots">0</b></div>
+    </div>
+    <canvas class="sigpad" id="sig"></canvas>
+    <div class="sigrow">
+      <span style="font-size:.8rem;color:var(--muted)" id="signer">Marc Tremblay · contremaître</span>
+      <button class="link" id="clearSig">Effacer</button>
+    </div>
+    <button class="cta" id="confirm">Confirmer et verrouiller</button>
+    <button class="link" style="display:block;margin:12px auto 0" id="cancel">Annuler</button>
+  </div>
+</div>
+
+<script>
+const CAD = n => new Intl.NumberFormat('fr-CA',{style:'currency',currency:'CAD',maximumFractionDigits:0}).format(n);
+const NUM = n => new Intl.NumberFormat('fr-CA',{maximumFractionDigits:0}).format(n);
+const $ = s => document.querySelector(s);
+
+let locked = false;
+
+// ---- Données démo (en mémoire) ----
+const lots = [
+  {code:'C-06.1-COFF', nom:'Coffrage empattements', zone:'Zone 6.1/C-D', type:'st', sous:'Coffrage Rondeau', unite:'empatt.', ref:12, avant:7, jour:2, budget:48000},
+  {code:'C-06.1-REMB', nom:'Remblayage tranchées', zone:'Zone 6.1/C-D', type:'auto', unite:'m³', ref:340, avant:180, jour:45, budget:22000, budgetH:210, hAvant:128},
+  {code:'C-06.1-BETON',nom:'Bétonnage empattements', zone:'Zone 6.1/C-D', type:'auto', unite:'m³', ref:85, avant:38, jour:9, budget:26000, budgetH:96, hAvant:44},
+  {code:'C-06.1-DRAIN',nom:'Drain de fondation', zone:'Zone 6.1/C-D', type:'auto', unite:'ml', ref:220, avant:60, jour:25, budget:15000, budgetH:140, hAvant:52},
+  {code:'C-06.2-EXCA', nom:'Excavation tranchée profonde', zone:'Zone 6.2/C-D', type:'st', sous:'Alfred Boivin', unite:'ml', ref:95, avant:40, jour:12, budget:31000},
+  {code:'C-06.2-PLOM', nom:'Plomberie profonde', zone:'Zone 6.2/C-D', type:'st', sous:'Plomberie Tremblay & Fils', unite:'ml', ref:110, avant:62, jour:14, budget:54000},
+];
+const crew = [
+  {nom:'Kevin Simard', role:'Journalier', present:true, h:10, lot:'C-06.1-REMB'},
+  {nom:'Dave Gagné', role:'Opérateur', present:true, h:10, lot:'C-06.1-REMB'},
+  {nom:'Steeve Bouchard', role:'Journalier', present:true, h:9, lot:'C-06.1-DRAIN'},
+  {nom:'Yannick Côté', role:'Charpentier', present:true, h:9, lot:'C-06.1-BETON'},
+  {nom:'Jonathan Villeneuve', role:'Journalier', present:false, h:0, lot:''},
+];
+const subs = [
+  {nom:'Coffrage Rondeau', scope:'Coffrage · Zone 6.1', contrat:'ST-102', present:true, n:8},
+  {nom:'Alfred Boivin', scope:'Excavation · Zone 6.2', contrat:'ST-104', present:true, n:4},
+  {nom:'Plomberie Tremblay & Fils', scope:'Plomberie · Zones 6.1-6.2', contrat:'ST-108', present:true, n:5},
+  {nom:'Électricité Saguenay', scope:'Électricité', contrat:'ST-111', present:false, n:0},
+  {nom:'Ventilation Nordik', scope:'Ventilation', contrat:'ST-115', present:false, n:0},
+];
+// Autres lots du WBS Somtech, non présélectionnés (autres zones/phases). Activables au besoin.
+const wbsInactifs = [
+  {code:'C-06.3-COFF', nom:'Coffrage empattements', zone:'Zone 6.3/C-D', type:'st', sous:'Coffrage Rondeau', unite:'empatt.', ref:10, avant:0, jour:0, budget:40000},
+  {code:'C-07.1-DALLE',nom:'Dalle sur sol', zone:'Zone 7.1/A-B', type:'auto', unite:'m²', ref:620, avant:0, jour:0, budget:38000, budgetH:180, hAvant:0},
+  {code:'C-05.2-REMB', nom:'Remblai structural', zone:'Zone 5.2/C-D', type:'auto', unite:'m³', ref:210, avant:0, jour:0, budget:14000, budgetH:120, hAvant:0},
+];
+
+const autoLots = () => lots.filter(l=>l.type==='auto');
+const clampNum = v => isNaN(v)||v<0 ? 0 : v;
+
+function lotCalc(l){
+  const cumul = Math.min(l.avant + l.jour, l.ref);
+  const pct = l.ref>0 ? cumul/l.ref : 0;
+  const pctAvant = l.ref>0 ? l.avant/l.ref : 0;
+  const reste = Math.max(l.ref - cumul,0);
+  const va = pct*l.budget;
+  const vaJour = (pct-pctAvant)*l.budget;
+  let ipc=null;
+  if(l.type==='auto'){
+    const hJour = crew.filter(c=>c.present && c.lot===l.code).reduce((s,c)=>s+clampNum(c.h),0);
+    const hCons = l.hAvant + hJour;
+    const vaH = pct*l.budgetH;
+    ipc = hCons>0 ? vaH/hCons : null;
+    l._hJour=hJour; l._hCons=hCons;
+  }
+  return {cumul,pct,pctAvant,reste,va,vaJour,ipc};
+}
+function ipcClass(v){ return v>=1 ? 'ok' : v>=0.9 ? 'warn' : 'bad'; }
+
+function renderLots(){
+  const box = $('#lots'); box.innerHTML='';
+  lots.forEach((l,i)=>{
+    const c = lotCalc(l);
+    const el = document.createElement('div');
+    el.className='lot'+(locked?' locked':'');
+    const donePct = c.pctAvant*100;
+    const todayPct = (c.pct-c.pctAvant)*100;
+    let ipcHtml='';
+    if(l.type==='auto'){
+      if(c.ipc!==null){
+        ipcHtml = `<div class="ipc"><span class="pill ${ipcClass(c.ipc)}">IPC ${c.ipc.toFixed(2)}</span><small>${NUM(l._hCons)} h / ${l.budgetH} h</small></div>`;
+      } else {
+        ipcHtml = `<div class="ipc"><small>Aucune heure affectée</small></div>`;
+      }
+    } else {
+      ipcHtml = `<div class="ipc"><small>Décompte sous-traitant</small></div>`;
+    }
+    el.innerHTML = `
+      <div class="lot-top">
+        <div style="flex:1">
+          <div class="lot-code">${l.code}</div>
+          <div class="lot-name">${l.nom}</div>
+          <div class="lot-sub">${l.zone}${l.sous?' · '+l.sous:''}</div>
+        </div>
+        <span class="tag ${l.type}">${l.type==='auto'?'Forces propres':'Sous-traité'}</span>
+      </div>
+      <div class="lbar"><i class="done" style="width:${donePct}%"></i><i class="today" style="width:${todayPct}%"></i></div>
+      <div class="lstat"><span>Cumul <b>${NUM(c.cumul)}</b> / ${NUM(l.ref)} ${l.unite}</span><span><b>${Math.round(c.pct*100)}%</b> · reste ${NUM(c.reste)} ${l.unite}</span></div>
+      <div class="entry">
+        <span class="qlbl">Posé aujourd'hui</span>
+        <div class="stp">
+          <button data-i="${i}" data-d="-1" aria-label="Moins">−</button>
+          <input type="number" inputmode="decimal" data-i="${i}" value="${l.jour}" min="0">
+          <button data-i="${i}" data-d="1" aria-label="Plus">+</button>
+        </div>
+        <span class="unit">${l.unite}</span>
+      </div>
+      <div class="lfoot">
+        <div class="va">Aujourd'hui ${l.jour>0?`<span class="add">+${NUM(l.jour)} ${l.unite}</span>`:'<b>—</b>'}</div>
+        ${ipcHtml}
+      </div>`;
+    box.appendChild(el);
+  });
+  // steppers
+  box.querySelectorAll('.stp button').forEach(b=>b.onclick=()=>{
+    if(locked)return;
+    const i=+b.dataset.i, d=+b.dataset.d;
+    const step = lots[i].unite==='empatt.'?1:(lots[i].ref>150?5:1);
+    lots[i].jour = clampNum(lots[i].jour + d*step);
+    renderAll();
+  });
+  box.querySelectorAll('.stp input').forEach(inp=>inp.oninput=()=>{
+    if(locked)return;
+    lots[+inp.dataset.i].jour = clampNum(parseFloat(inp.value));
+    renderSummary();
+    // live bar without full rerender for smoothness
+    renderLots();
+  });
+  $('#lotCount').textContent = lots.length+' actifs';
+  const zones=[...new Set(lots.map(l=>l.zone.replace('Zone ','').split('/')[0]))];
+  if($('#srcZones')) $('#srcZones').textContent = 'Zones actives : '+zones.join(' · ')+'.';
+}
+
+function renderCrew(){
+  const box=$('#crew'); box.innerHTML='';
+  crew.forEach((c,i)=>{
+    const opts = autoLots().map(l=>`<option value="${l.code}" ${c.lot===l.code?'selected':''}>${l.nom} · ${l.zone}</option>`).join('');
+    const el=document.createElement('div');
+    el.className='crew crewrow'+(c.present?'':' absent');
+    el.innerHTML=`
+      <div class="chk ${c.present?'on':''}" data-i="${i}">✓</div>
+      <div class="cn"><b>${c.nom}</b><small>${c.role}</small></div>
+      <div class="chours"><input type="number" inputmode="numeric" data-i="${i}" value="${c.h}" min="0" ${c.present?'':'disabled'}><span>h</span></div>
+      ${c.present?`<select class="csel" data-i="${i}"><option value="">— Affecté à quel lot ? —</option>${opts}</select>`:''}`;
+    box.appendChild(el);
+  });
+  box.querySelectorAll('.chk').forEach(k=>k.onclick=()=>{
+    if(locked)return;
+    const i=+k.dataset.i; crew[i].present=!crew[i].present;
+    if(!crew[i].present){crew[i].h=0;crew[i].lot='';}else if(crew[i].h===0)crew[i].h=8;
+    renderAll();
+  });
+  box.querySelectorAll('.chours input').forEach(inp=>inp.oninput=()=>{
+    if(locked)return; crew[+inp.dataset.i].h=clampNum(parseFloat(inp.value)); renderAll();
+  });
+  box.querySelectorAll('.csel').forEach(sel=>sel.onchange=()=>{
+    if(locked)return; crew[+sel.dataset.i].lot=sel.value; renderAll();
+  });
+  const present = crew.filter(c=>c.present).length;
+  const hrs = crew.filter(c=>c.present).reduce((s,c)=>s+clampNum(c.h),0);
+  $('#crewCount').textContent = present+' présents';
+  $('#crewHrs').textContent = NUM(hrs)+' h';
+}
+
+function renderSubs(){
+  const box=$('#subs'); box.innerHTML='';
+  subs.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='crew crewrow'+(s.present?'':' absent');
+    el.innerHTML=`
+      <div class="chk ${s.present?'on':''}" data-i="${i}">✓</div>
+      <div class="cn"><b>${s.nom}</b><small>${s.scope} · ${s.contrat}</small></div>
+      ${s.present?`<div class="chours"><input type="number" inputmode="numeric" data-i="${i}" value="${s.n}" min="0"><span>trav.</span></div>`:'<span style="font-size:.74rem;color:var(--muted);font-weight:600">Non présent</span>'}`;
+    box.appendChild(el);
+  });
+  box.querySelectorAll('.chk').forEach(k=>k.onclick=()=>{
+    if(locked)return; const i=+k.dataset.i; subs[i].present=!subs[i].present;
+    if(!subs[i].present)subs[i].n=0; else if(subs[i].n===0)subs[i].n=1;
+    renderSubs();
+  });
+  box.querySelectorAll('.chours input').forEach(inp=>inp.oninput=()=>{
+    if(locked)return; subs[+inp.dataset.i].n=clampNum(parseFloat(inp.value));
+  });
+  $('#subCount').textContent = subs.filter(s=>s.present).length+' présents';
+}
+
+function renderSummary(){
+  const budgetTot = lots.reduce((s,l)=>s+l.budget,0);
+  let va=0, vaDay=0;
+  lots.forEach(l=>{const c=lotCalc(l); va+=c.va; vaDay+=c.vaJour;});
+  const pct = budgetTot>0 ? va/budgetTot : 0;
+  const pctDay = budgetTot>0 ? vaDay/budgetTot : 0;
+  $('#gPct').textContent = Math.round(pct*100);
+  $('#gDone').style.width = Math.max((pct-pctDay)*100,0)+'%';
+  $('#gToday').style.width = (pctDay*100)+'%';
+  $('#gDay').textContent = '+'+(pctDay*100).toFixed(1).replace('.',',')+'\u00A0%';
+  $('#barPct').textContent = Math.round(pct*100);
+  const hrs = crew.filter(c=>c.present).reduce((s,c)=>s+clampNum(c.h),0);
+  $('#gHrs').textContent = NUM(hrs);
+  $('#gCrew').textContent = crew.filter(c=>c.present).length;
+  const lotsUp = lots.filter(l=>l.jour>0).length;
+  $('#gLotsUp').textContent = lotsUp;
+  // IPC moyen pondéré (forces propres)
+  let vaH=0,hC=0;
+  autoLots().forEach(l=>{const c=lotCalc(l); vaH+=c.pct*l.budgetH; hC+=(l._hCons||0);});
+  $('#gIpc').textContent = hC>0 ? (vaH/hC).toFixed(2) : '—';
+  // recap sheet
+  $('#rPct').textContent = Math.round(pct*100)+' %';
+  $('#rDay').textContent = '+'+(pctDay*100).toFixed(1).replace('.',',')+' %';
+  $('#rHrs').textContent = NUM(hrs)+' h';
+  $('#rLots').textContent = lotsUp;
+}
+
+function renderAll(){ renderLots(); renderCrew(); renderSummary(); }
+renderSubs();
+renderAll();
+
+// ---- Activer un autre lot du WBS ----
+let pickOpen=false;
+function renderPick(){
+  const box=$('#wbsPick');
+  if(!pickOpen){box.innerHTML='';box.classList.remove('on');return;}
+  box.classList.add('on');
+  if(wbsInactifs.length===0){box.innerHTML='<div class="pick-empty">Tous les lots du WBS sont déjà actifs sur ce rapport.</div>';return;}
+  box.innerHTML='<div class="pick-h">Autres lots au WBS du projet</div>'+wbsInactifs.map((l,i)=>`
+    <div class="pick-row">
+      <div><div class="lot-code">${l.code}</div><b>${l.nom}</b><div class="lot-sub">${l.zone}${l.sous?' · '+l.sous:''}</div></div>
+      <button class="pick-act" data-i="${i}">Activer</button>
+    </div>`).join('');
+  box.querySelectorAll('.pick-act').forEach(b=>b.onclick=()=>{
+    if(locked)return;
+    lots.push(wbsInactifs.splice(+b.dataset.i,1)[0]);
+    renderAll(); renderPick();
+  });
+}
+$('#addLot').onclick=()=>{ if(locked)return; pickOpen=!pickOpen; renderPick(); };
+
+// ---- Thème ----
+$('#theme').onclick=()=>{
+  const cur=document.documentElement.getAttribute('data-theme');
+  const dark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme:dark)').matches;
+  document.documentElement.setAttribute('data-theme', dark?'light':'dark');
+};
+
+// ---- Signature ----
+const cvs=$('#sig'); let ctx, drawing=false, hasInk=false;
+function sizeCanvas(){
+  const r=cvs.getBoundingClientRect(); const dpr=devicePixelRatio||1;
+  cvs.width=r.width*dpr; cvs.height=r.height*dpr;
+  ctx=cvs.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.lineWidth=2.4; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.strokeStyle=getComputedStyle(document.body).color;
+}
+function pos(e){const r=cvs.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};}
+function start(e){e.preventDefault();drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function move(e){if(!drawing)return;e.preventDefault();const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();hasInk=true;}
+function end(){drawing=false;}
+['mousedown','touchstart'].forEach(ev=>cvs.addEventListener(ev,start,{passive:false}));
+['mousemove','touchmove'].forEach(ev=>cvs.addEventListener(ev,move,{passive:false}));
+['mouseup','mouseleave','touchend'].forEach(ev=>cvs.addEventListener(ev,end));
+$('#clearSig').onclick=()=>{ctx.clearRect(0,0,cvs.width,cvs.height);hasInk=false;};
+
+function openSheet(){ $('#sheetbg').classList.add('on'); setTimeout(sizeCanvas,60); }
+function closeSheet(){ $('#sheetbg').classList.remove('on'); }
+$('#submit').onclick=()=>{ if(locked){return;} renderSummary(); openSheet(); };
+$('#cancel').onclick=closeSheet;
+$('#sheetbg').onclick=e=>{ if(e.target===$('#sheetbg')) closeSheet(); };
+
+$('#confirm').onclick=()=>{
+  if(!hasInk){ alert('Signe dans la case pour verrouiller le rapport.'); return; }
+  locked=true;
+  closeSheet();
+  document.getElementById('main').classList.add('readonly');
+  $('#lockNote').classList.add('on');
+  const b=$('#submit'); b.textContent='✓ Verrouillé — rouvrir'; b.classList.add('locked');
+  b.onclick=()=>{ // réouverture par le CP, avec trace
+    locked=false;
+    document.getElementById('main').classList.remove('readonly');
+    $('#lockNote').classList.remove('on');
+    b.textContent='Soumettre le rapport'; b.classList.remove('locked');
+    b.onclick=()=>{ renderSummary(); openSheet(); };
+    alert('Rapport rouvert par le chargé de projet. La modification est tracée (prototype).');
+  };
+  renderAll();
+  const now=new Intl.DateTimeFormat('fr-CA',{hour:'2-digit',minute:'2-digit'}).format(new Date());
+  setTimeout(()=>alert('Rapport soumis et verrouillé à '+now+' par Marc Tremblay. Partagé en temps réel à l\'équipe (prototype).'),150);
+};
+</script>
+</body>
+</html>
