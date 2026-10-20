@@ -6,28 +6,28 @@
 <title>Rapport quotidien — 23-003 Camions Avantage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
-  --pine:#34702A;
-  --pine-2:#43892F;
-  --pine-soft:#E7F1E2;
-  --amber:#5BB031;
-  --amber-deep:#357023;
-  --concrete:#ECEBE6;
+  --pine:#4C7334;
+  --pine-2:#618E43;
+  --pine-soft:#EEF2EB;
+  --amber:#D97706;
+  --amber-deep:#B45309;
+  --concrete:#F9FAFB;
   --surface:#FFFFFF;
-  --surface-2:#F4F4EF;
-  --ink:#1F1E1C;
-  --muted:#6C6F68;
-  --line:#DAD8D0;
-  --line-strong:#C6C4BB;
-  --ok:#2F7D45;
-  --warn:#C6820A;
-  --bad:#B23A2E;
-  --st:#4A5A78;
-  --radius:14px;
+  --surface-2:#F3F4F6;
+  --ink:#111827;
+  --muted:#6B7280;
+  --line:#E5E7EB;
+  --line-strong:#D1D5DB;
+  --ok:#15803D;
+  --warn:#B45309;
+  --bad:#B91C1C;
+  --st:#4B5563;
+  --radius:12px;
   --tap:48px;
   --maxw:640px;
 }
@@ -35,7 +35,7 @@
 html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 120px);-webkit-text-size-adjust:100%}
 body{
   margin:0;
-  font-family:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   background:var(--concrete);
   color:var(--ink);
   font-size:16px;line-height:1.4;
@@ -44,53 +44,54 @@ body{
 }
 :root:not([data-theme="light"]){
   @media (prefers-color-scheme:dark){
-    --pine:#AED69F;--pine-2:#8CCB77;--pine-soft:#22311C;
-    --amber:#86CF63;--amber-deep:#86CF63;
-    --concrete:#121410;--surface:#1C1F19;--surface-2:#232619;
-    --ink:#ECEFE6;--muted:#9A9E93;--line:#333829;--line-strong:#434838;
-    --ok:#63B87A;--warn:#E8A93A;--bad:#E27366;--st:#8FA0C0;
+    --pine:#A6D083;--pine-2:#8FBF6E;--pine-soft:#1D2A16;
+    --amber:#FCD34D;--amber-deep:#FCD34D;
+    --concrete:#0F1115;--surface:#171A1F;--surface-2:#1F242B;
+    --ink:#F3F4F6;--muted:#9CA3AF;--line:#2A2F37;--line-strong:#3A414B;
+    --ok:#4ADE80;--warn:#FCD34D;--bad:#F87171;--st:#9CA3AF;
   }
 }
 :root[data-theme="dark"]{
-  --pine:#AED69F;--pine-2:#8CCB77;--pine-soft:#22311C;
-  --amber:#86CF63;--amber-deep:#86CF63;
-  --concrete:#121410;--surface:#1C1F19;--surface-2:#232619;
-  --ink:#ECEFE6;--muted:#9A9E93;--line:#333829;--line-strong:#434838;
-  --ok:#63B87A;--warn:#E8A93A;--bad:#E27366;--st:#8FA0C0;
+  --pine:#A6D083;--pine-2:#8FBF6E;--pine-soft:#1D2A16;
+  --amber:#FCD34D;--amber-deep:#FCD34D;
+  --concrete:#0F1115;--surface:#171A1F;--surface-2:#1F242B;
+  --ink:#F3F4F6;--muted:#9CA3AF;--line:#2A2F37;--line-strong:#3A414B;
+  --ok:#4ADE80;--warn:#FCD34D;--bad:#F87171;--st:#9CA3AF;
 }
 .wrap{max-width:var(--maxw);margin:0 auto}
 
-/* ---------- Header instrument ---------- */
+/* ---------- Header clair (style Opérations) ---------- */
 header{
   position:sticky;top:0;z-index:40;
-  background:var(--pine);color:#F3F1E8;
+  background:var(--surface);color:var(--ink);
   padding-top:calc(10px + env(safe-area-inset-top,0px));
-  box-shadow:0 2px 0 rgba(0,0,0,.18);
+  border-bottom:1px solid var(--line);
 }
-:root[data-theme="dark"] header,
-:root:not([data-theme="light"]) header{background:#16300F}
 .hbar{max-width:var(--maxw);margin:0 auto;padding:0 16px 12px}
-.brand{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-top:2px}
+.brand{display:flex;align-items:center;gap:7px;margin-bottom:9px;padding-top:2px}
 .brand svg{flex:none}
-.brand span{font-size:.7rem;font-weight:700;letter-spacing:1.6px;color:#CFE6C4}
-.brand b{font-weight:800;color:#fff}
-.hrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.proj{font-weight:800;font-size:1.05rem;letter-spacing:.2px;line-height:1.1}
-.proj small{display:block;font-weight:500;font-size:.72rem;color:#B8C9B4;letter-spacing:.4px;margin-top:2px}
-.tbtn{width:38px;height:38px;border:none;border-radius:10px;background:rgba(255,255,255,.12);color:#F3F1E8;font-size:1.05rem;cursor:pointer}
-.tbtn:active{transform:scale(.94)}
-.gauges{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px;margin-top:12px}
-.gauge{background:rgba(255,255,255,.07);border-radius:10px;padding:8px 10px}
-.gauge .lbl{font-size:.64rem;letter-spacing:.5px;color:#AFC3AC;text-transform:uppercase;font-weight:600}
-.gauge .val{font-weight:800;font-size:1.28rem;line-height:1.05;margin-top:2px}
-.gauge.today .val{color:#C7ECB5}
-.pbar{height:7px;border-radius:4px;background:rgba(255,255,255,.14);margin-top:7px;overflow:hidden;display:flex}
+.brand span{font-size:.82rem;font-weight:500;color:var(--muted)}
+.hrow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.proj{font-weight:700;font-size:1.32rem;letter-spacing:-.01em;line-height:1.15;color:var(--ink)}
+.proj small{display:block;font-weight:500;font-size:.82rem;color:var(--muted);margin-top:3px}
+.hctrl{display:flex;align-items:center;gap:8px;flex:none}
+.btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font-family:inherit;font-weight:600;font-size:.86rem;border-radius:var(--radius);height:36px;padding:0 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:active{background:var(--surface-2)}
+.btn.sq{width:36px;padding:0;justify-content:center;font-size:1rem}
+.tbtn{width:36px;height:36px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--surface);color:var(--ink);font-size:1rem;cursor:pointer}
+.tbtn:active{background:var(--surface-2)}
+.gauges{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px;margin-top:14px}
+.gauge{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+.gauge .lbl{font-size:.78rem;color:var(--muted);font-weight:500;margin-top:4px}
+.gauge .val{font-weight:700;font-size:1.38rem;line-height:1.1;color:var(--pine-2)}
+.gauge.today .val{color:var(--amber-deep)}
+.pbar{height:7px;border-radius:4px;background:var(--line);margin-top:8px;overflow:hidden;display:flex}
 .pbar i{display:block;height:100%}
-.pbar .done{background:#9FD3A8}
+.pbar .done{background:var(--pine-2)}
 .pbar .today{background:var(--amber)}
-.hmeta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:11px;font-size:.74rem;color:#CFDCCB}
-.hmeta b{color:#fff;font-weight:700}
-.hmeta .dot{color:var(--amber)}
+.hmeta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:.78rem;color:var(--muted)}
+.hmeta b{color:var(--ink);font-weight:700}
+.hmeta .dot{color:var(--line-strong)}
 
 /* ---------- Sections ---------- */
 main{max-width:var(--maxw);margin:0 auto;padding:14px 12px 132px}
@@ -239,12 +240,17 @@ details[open] .chev{transform:rotate(90deg)}
 
 <header>
   <div class="hbar">
-    <div class="brand"><svg width="20" height="22" viewBox="0 0 22 24" aria-hidden="true"><polygon points="11,1 21,6 11,11 1,6" fill="#8BC47B"/><polygon points="1,6 11,11 11,23 1,18" fill="#4E9A3D"/><polygon points="21,6 11,11 11,23 21,18" fill="#34702A"/></svg><span>CONSTRUCTION <b>GAUTHIER</b></span></div>
+    <div class="brand"><svg width="16" height="17" viewBox="0 0 22 24" aria-hidden="true"><polygon points="11,1 21,6 11,11 1,6" fill="#8BC47B"/><polygon points="1,6 11,11 11,23 1,18" fill="#618E43"/><polygon points="21,6 11,11 11,23 21,18" fill="#4C7334"/></svg><span>Construction Gauthier · Opérations</span></div>
     <div class="hrow">
-      <div class="proj">23-003 · Camions Avantage
-        <small id="hdate">Lundi 21 septembre 2026 · Quart de jour</small>
+      <div class="proj">Rapport quotidien
+        <small id="hdate">23-003 Camions Avantage · Lundi 21 septembre 2026 · Quart de jour</small>
       </div>
-      <button class="tbtn" id="theme" aria-label="Thème">◐</button>
+      <div class="hctrl">
+        <button class="btn sq" aria-label="Jour précédent">‹</button>
+        <button class="btn">Aujourd'hui</button>
+        <button class="btn sq" aria-label="Jour suivant">›</button>
+        <button class="btn sq" id="theme" aria-label="Thème">◐</button>
+      </div>
     </div>
     <div class="gauges">
       <div class="gauge">
