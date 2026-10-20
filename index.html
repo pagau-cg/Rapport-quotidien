@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prototypes terrain — CG × Somtech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pine:#34702A; --pine-dk:#285a20; --pine-soft:#E7F1E2;
+    --amber:#5BB031; --ink:#1F1E1C; --muted:#6C6F68;
+    --surface:#FFFFFF; --concrete:#F4F6F0; --line:#DAD8D0; --line-strong:#C6C4BB;
+    --st:#4A5A78; --radius:16px; --tap:48px; --maxw:680px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --pine:#AED69F; --pine-dk:#86CF63; --pine-soft:#22311C;
+      --amber:#86CF63; --ink:#ECEFE6; --muted:#9A9E93;
+      --surface:#1C1F19; --concrete:#121410; --line:#333829; --line-strong:#434838;
+      --st:#8FA0C0;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:var(--concrete); color:var(--ink);
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+    padding:max(18px,env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto}
+
+  /* Header / wordmark */
+  .brand{display:flex; align-items:center; gap:11px; padding:6px 0 4px}
+  .cube{width:30px;height:30px;border-radius:7px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--pine),var(--amber));
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}
+  .wm{font-weight:800; letter-spacing:.2px; font-size:16px; line-height:1}
+  .wm .c{color:var(--pine)} .wm .g{color:var(--ink)}
+  .wm .sub{display:block; font-size:9.5px; font-weight:600; letter-spacing:2.5px;
+    color:var(--muted); margin-top:3px}
+
+  h1{font-size:25px; font-weight:800; letter-spacing:-.3px; margin:20px 0 6px}
+  .lede{color:var(--muted); font-size:15px; margin:0 0 6px; max-width:52ch}
+  .badge{display:inline-block; background:var(--pine-soft); color:var(--pine-dk);
+    font-size:11px; font-weight:700; letter-spacing:.4px; padding:4px 10px;
+    border-radius:999px; margin:10px 0 2px}
+
+  .label{font-size:11px; font-weight:700; letter-spacing:1.6px; color:var(--muted);
+    text-transform:uppercase; margin:26px 2px 11px}
+
+  /* Prototype cards */
+  .card{display:flex; align-items:center; gap:14px; text-decoration:none; color:inherit;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 16px; margin-bottom:12px; min-height:var(--tap);
+    transition:border-color .15s, transform .05s, box-shadow .15s}
+  .card:hover{border-color:var(--pine); box-shadow:0 6px 20px -12px rgba(52,112,42,.5)}
+  .card:active{transform:scale(.995)}
+  .ic{width:46px;height:46px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;
+    background:var(--pine-soft); font-size:22px}
+  .card .body{flex:1 1 auto; min-width:0}
+  .card .t{font-weight:700; font-size:16.5px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .card .d{color:var(--muted); font-size:13.5px; margin-top:3px}
+  .who{font-size:11px; font-weight:700; color:var(--st); letter-spacing:.3px;
+    background:color-mix(in srgb, var(--st) 12%, transparent); padding:2px 8px; border-radius:6px}
+  .go{flex:0 0 auto; color:var(--pine); font-weight:800; font-size:18px}
+
+  .note{background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--pine);
+    border-radius:12px; padding:14px 15px; color:var(--muted); font-size:13.5px; margin-top:8px}
+  .note b{color:var(--ink)}
+
+  .how{margin-top:6px}
+  .how ol{margin:8px 0 0; padding-left:20px; color:var(--muted); font-size:14px}
+  .how li{margin:6px 0}
+  .how a{color:var(--pine-dk); font-weight:600}
+
+  footer{margin-top:30px; padding-top:16px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:12px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="cube"></div>
+    <div class="wm"><span class="c">CONSTRUCTION</span> <span class="g">Gauthier</span>
+      <span class="sub">ENTREPRENEUR GÉNÉRAL</span></div>
+  </div>
+
+  <div class="badge">CG × Somtech — couche terrain</div>
+  <h1>Prototypes terrain</h1>
+  <p class="lede">La saisie de chantier qui boucle <b>planifié vs réel</b> par la valeur acquise,
+    captée au lot WBS, directement sur le téléphone du terrain.</p>
+
+  <div class="label">Les deux prototypes</div>
+
+  <a class="card" href="rapport-quotidien-cg-prototype.html">
+    <div class="ic">&#128203;</div>
+    <div class="body">
+      <div class="t">Rapport quotidien <span class="who">Contremaître</span></div>
+      <div class="d">Avancement par lot WBS en quantité — valeur acquise et productivité (IPC) calculées en direct.</div>
+    </div>
+    <div class="go">&#8594;</div>
+  </a>
+
+  <a class="card" href="feuille-temps-forces-propres-cg-prototype.html">
+    <div class="ic">&#9201;&#65039;</div>
+    <div class="body">
+      <div class="t">Feuille de temps — forces propres <span class="who">Travailleur</span></div>
+      <div class="d">Saisie quotidienne par activité WBS, vue hebdomadaire avant de soumettre. Validée par le contremaître avant la paye.</div>
+    </div>
+    <div class="go">&#8594;</div>
+  </a>
+
+  <div class="note">
+    Ces prototypes sont des <b>références de comportement</b>, pas du code de production.
+    Ils servent à Somtech pour rebâtir les modules dans la stack cible (Next.js / Supabase).
+    Données fictives, en mémoire.
+  </div>
+
+  <div class="label">Pour l'équipe de direction — comment commenter</div>
+  <div class="how">
+    <ol>
+      <li>Ouvre chaque prototype ci-dessus, idéalement sur <b>téléphone</b> : ils sont pensés mobile d'abord.</li>
+      <li>Essaie la saisie : change une quantité, coche un travailleur, bascule en vue semaine.</li>
+      <li>Laisse tes commentaires dans l'onglet <a href="https://github.com/pagau-cg/Rapport-quotidien/issues">Issues</a> du dépôt.</li>
+    </ol>
+  </div>
+
+  <footer>
+    <span>Construction Gauthier — Stratégie &amp; innovation</span>
+    <a href="contexte-rapport-quotidien-valeur-acquise-CG-Somtech.md">Contexte complet &amp; modèle de données &#8594;</a>
+  </footer>
+
+</div>
+</body>
+</html>
