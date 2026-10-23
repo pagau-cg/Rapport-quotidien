@@ -194,6 +194,18 @@ details[open] .chev{transform:rotate(90deg)}
 .sw.on{background:var(--pine-2)}.sw.on i{left:24px}
 .addbtn{width:100%;height:var(--tap);border:1.5px dashed var(--line-strong);background:transparent;color:var(--pine-2);border-radius:11px;font-family:inherit;font-weight:700;font-size:.92rem;cursor:pointer;margin-top:4px}
 .addbtn:active{background:var(--pine-soft)}
+.wx{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.wx-addr{display:flex;align-items:center;gap:7px;padding:9px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted);font-weight:500}
+.wx-addr b{color:var(--ink);font-weight:600}
+.wx-main{display:flex;align-items:center;gap:13px;padding:13px 14px}
+.wx-ic{font-size:2rem;line-height:1;flex:none}
+.wx-temp{font-size:1.9rem;font-weight:700;color:var(--ink);line-height:1}
+.wx-cond{font-size:.86rem;color:var(--muted);font-weight:500;margin-top:2px}
+.wx-grid{display:flex;gap:7px 16px;flex-wrap:wrap;margin-left:auto;font-size:.78rem;color:var(--muted);font-weight:500}
+.wx-grid b{color:var(--ink);font-weight:600}
+.wx-foot{display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px dashed var(--line);font-size:.72rem;color:var(--muted)}
+.wx-foot .rf{margin-left:auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--pine-2);font-family:inherit;font-weight:600;font-size:.74rem;border-radius:8px;height:30px;padding:0 11px;cursor:pointer}
+.wx-foot .ed{border:none;background:none;color:var(--muted);font-family:inherit;font-weight:600;font-size:.74rem;cursor:pointer;text-decoration:underline}
 .acc-note{display:flex;gap:11px;align-items:flex-start;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:11px;padding:12px;font-size:.82rem;color:var(--muted)}
 .acc-note b{color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
@@ -268,6 +280,8 @@ details[open] .chev{transform:rotate(90deg)}
       </div>
     </div>
     <div class="hmeta">
+      <span>Rempli par : <b>Marc Tremblay</b>, contremaître</span>
+      <span class="dot">•</span>
       <span>Heures CG : <b id="gHrs">0</b> h</span>
       <span class="dot">•</span>
       <span>Effectif : <b id="gCrew">0</b></span>
@@ -322,6 +336,26 @@ details[open] .chev{transform:rotate(90deg)}
     </div>
   </details>
 
+  <!-- VISITEURS -->
+  <details class="sec">
+    <summary class="sh"><span class="sicon">◈</span> Visiteurs <span class="scount" id="visCount">0</span><span class="chev">▶</span></summary>
+    <div class="sbody">
+      <p class="hint">Toute personne venue au chantier qui n'est ni un travailleur CG ni un sous-traitant : client, professionnel, inspecteur, fournisseur.</p>
+      <div id="visitors"></div>
+      <button class="addbtn" id="addVis">+ Ajouter un visiteur</button>
+    </div>
+  </details>
+
+  <!-- ÉQUIPEMENTS -->
+  <details class="sec">
+    <summary class="sh"><span class="sicon">⚙</span> Équipements <span class="scount" id="eqCount">0</span><span class="chev">▶</span></summary>
+    <div class="sbody">
+      <p class="hint">Équipements majeurs sur le chantier : heures d'utilisation et par qui. Utile pour la facturation de location et les réclamations.</p>
+      <div id="equip"></div>
+      <button class="addbtn" id="addEq">+ Ajouter un équipement</button>
+    </div>
+  </details>
+
   <!-- GENERAL -->
   <details class="sec">
     <summary class="sh"><span class="sicon">✦</span> Général et météo<span class="chev">▶</span></summary>
@@ -330,17 +364,22 @@ details[open] .chev{transform:rotate(90deg)}
         <div class="field"><label>Début</label><input type="time" value="07:00"></div>
         <div class="field"><label>Fin</label><input type="time" value="16:00"></div>
       </div>
-      <div class="two">
-        <div class="field"><label>Météo</label>
-          <select><option>Dégagé, 18 °C</option><option>Nuageux, 14 °C</option><option>Pluie, 11 °C</option><option>Neige</option></select>
-        </div>
-        <div class="field"><label>Vent</label>
-          <select><option>Faible</option><option>Modéré</option><option>Fort</option></select>
-        </div>
+      <div class="field"><label>Météo du site</label>
+        <div class="wx" id="wx"></div>
       </div>
       <div class="field"><label>Note du contremaître</label>
         <textarea placeholder="Faits saillants de la journée, à surveiller demain, impacts possibles."></textarea>
       </div>
+    </div>
+  </details>
+
+  <!-- PROBLÈMES ET IMPACTS -->
+  <details class="sec">
+    <summary class="sh"><span class="sicon">⚠</span> Problèmes et impacts <span class="scount" id="probCount">0</span><span class="chev">▶</span></summary>
+    <div class="sbody">
+      <p class="hint">Problèmes rencontrés en cours de journée et leur impact (retard, temps d'attente, heures perdues). Protège en cas de réclamation.</p>
+      <div id="probs"></div>
+      <button class="addbtn" id="addProb">+ Consigner un problème</button>
     </div>
   </details>
 
@@ -627,6 +666,109 @@ function renderSummary(){
 function renderAll(){ renderLots(); renderCrew(); renderSummary(); }
 renderSubs();
 renderAll();
+
+// ---- Visiteurs / Équipements / Problèmes ----
+const TYPES_VIS=['Client','Professionnel (archi/ingénieur)','Inspecteur / CNESST','Fournisseur','Autre'];
+let visitors=[{nom:'Éric Simard', comp:'Cidic', type:'Client', heure:'10:30'}];
+let equip=[{nom:'Skytrack 4000', heures:2, par:'Électricité Saguenay', note:'Déchargement de matériel'}];
+let probs=[{desc:'Laboratoire arrivé 1 h en retard', impact:'Retard du début de la coulée, ~5 travailleurs en attente', hperdu:5}];
+const esc=s=>(s||'').replace(/"/g,'&quot;');
+const RMBTN='border:none;background:none;color:var(--bad);font-family:inherit;font-weight:600;font-size:.8rem;cursor:pointer;margin-top:9px;padding:2px 0';
+
+function renderVisitors(){
+  const box=$('#visitors'); box.innerHTML='';
+  visitors.forEach((v,i)=>{
+    const opts=TYPES_VIS.map(t=>`<option ${v.type===t?'selected':''}>${t}</option>`).join('');
+    const el=document.createElement('div'); el.style.cssText='border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:10px;background:var(--surface)';
+    el.innerHTML=`<div class="two"><div class="field" style="margin-bottom:9px"><label>Nom</label><input type="text" data-i="${i}" data-f="nom" value="${esc(v.nom)}" placeholder="Nom"></div>
+      <div class="field" style="margin-bottom:9px"><label>Compagnie</label><input type="text" data-i="${i}" data-f="comp" value="${esc(v.comp)}" placeholder="Compagnie"></div></div>
+      <div class="two"><div class="field" style="margin-bottom:0"><label>Type</label><select data-i="${i}" data-f="type">${opts}</select></div>
+      <div class="field" style="margin-bottom:0"><label>Heure</label><input type="time" data-i="${i}" data-f="heure" value="${v.heure}"></div></div>
+      <button class="rmrow" data-i="${i}" style="${RMBTN}">Retirer</button>`;
+    box.appendChild(el);
+  });
+  wireRows(box, visitors, renderVisitors, 'visCount');
+}
+function renderEquip(){
+  const box=$('#equip'); box.innerHTML='';
+  equip.forEach((e,i)=>{
+    const el=document.createElement('div'); el.style.cssText='border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:10px;background:var(--surface)';
+    el.innerHTML=`<div class="two"><div class="field" style="margin-bottom:9px"><label>Équipement</label><input type="text" data-i="${i}" data-f="nom" value="${esc(e.nom)}" placeholder="Ex. Skytrack"></div>
+      <div class="field" style="margin-bottom:9px"><label>Heures d'utilisation</label><input type="number" step="0.5" min="0" data-i="${i}" data-f="heures" value="${e.heures}"></div></div>
+      <div class="field" style="margin-bottom:9px"><label>Utilisé par</label><input type="text" data-i="${i}" data-f="par" value="${esc(e.par)}" placeholder="CG, ou nom du sous-traitant"></div>
+      <div class="field" style="margin-bottom:0"><label>Note</label><input type="text" data-i="${i}" data-f="note" value="${esc(e.note)}" placeholder="Ex. déchargement de matériel"></div>
+      <button class="rmrow" data-i="${i}" style="${RMBTN}">Retirer</button>`;
+    box.appendChild(el);
+  });
+  wireRows(box, equip, renderEquip, 'eqCount');
+}
+function renderProbs(){
+  const box=$('#probs'); box.innerHTML='';
+  probs.forEach((p,i)=>{
+    const el=document.createElement('div'); el.style.cssText='border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:10px;background:var(--surface)';
+    el.innerHTML=`<div class="field" style="margin-bottom:9px"><label>Problème rencontré</label><input type="text" data-i="${i}" data-f="desc" value="${esc(p.desc)}" placeholder="Décris le problème"></div>
+      <div class="field" style="margin-bottom:9px"><label>Impact</label><textarea data-i="${i}" data-f="impact" placeholder="Retard, temps d'attente, conséquence…">${esc(p.impact)}</textarea></div>
+      <div class="field" style="margin-bottom:0"><label>Heures-personnes perdues (estimé)</label><input type="number" step="0.5" min="0" data-i="${i}" data-f="hperdu" value="${p.hperdu}"></div>
+      <button class="rmrow" data-i="${i}" style="${RMBTN}">Retirer</button>`;
+    box.appendChild(el);
+  });
+  wireRows(box, probs, renderProbs, 'probCount');
+}
+function wireRows(box, arr, rerender, countId){
+  box.querySelectorAll('input,select,textarea').forEach(inp=>inp.onchange=()=>{ if(locked)return; const i=+inp.dataset.i,f=inp.dataset.f; arr[i][f]= inp.type==='number'? (parseFloat(inp.value)||0): inp.value; });
+  box.querySelectorAll('.rmrow').forEach(b=>b.onclick=()=>{ if(locked)return; arr.splice(+b.dataset.i,1); rerender(); });
+  if(countId) $('#'+countId).textContent = arr.length;
+}
+$('#addVis').onclick=()=>{ if(locked)return; visitors.push({nom:'',comp:'',type:'Client',heure:'08:00'}); renderVisitors(); };
+$('#addEq').onclick=()=>{ if(locked)return; equip.push({nom:'',heures:0,par:'',note:''}); renderEquip(); };
+$('#addProb').onclick=()=>{ if(locked)return; probs.push({desc:'',impact:'',hperdu:0}); renderProbs(); };
+renderVisitors(); renderEquip(); renderProbs();
+
+// ---- Météo du site (auto depuis l'adresse du projet) ----
+// En production : adresse du projet (Ops/Somtech) → coordonnées → service météo
+// (Environnement Canada / MSC). Le relevé du jour est figé dans le rapport (archive).
+const siteAddr='1250, rue de l\'Industrie, Saguenay (QC) G7X 0A1';
+let wx={icon:'⛅', temp:-3, cond:'Partiellement nuageux', vent:'15 km/h NO', precip:'0 mm', hum:'72 %', auto:true, heure:'07:00', manuel:false};
+function heureNow(){ return new Intl.DateTimeFormat('fr-CA',{hour:'2-digit',minute:'2-digit'}).format(new Date()); }
+function renderWx(){
+  const box=$('#wx'); if(!box)return;
+  if(wx.manuel){
+    box.innerHTML=`
+      <div class="wx-addr">📍 <b>Camions Avantage</b> · ${siteAddr}</div>
+      <div style="padding:12px 14px">
+        <div class="two"><div class="field" style="margin-bottom:9px"><label>Conditions</label><input type="text" id="wcond" value="${wx.cond}"></div>
+          <div class="field" style="margin-bottom:9px"><label>Température</label><input type="text" id="wtemp" value="${wx.temp} °C"></div></div>
+        <div class="two"><div class="field" style="margin-bottom:0"><label>Vent</label><input type="text" id="wvent" value="${wx.vent}"></div>
+          <div class="field" style="margin-bottom:0"><label>Précipitations</label><input type="text" id="wprec" value="${wx.precip}"></div></div>
+      </div>
+      <div class="wx-foot"><span>Saisie manuelle</span><button class="ed" id="wxAuto">↩ Revenir au relevé automatique</button></div>`;
+    $('#wcond').onchange=e=>wx.cond=e.target.value;
+    $('#wtemp').onchange=e=>wx.temp=e.target.value.replace(/[^\-0-9]/g,'');
+    $('#wvent').onchange=e=>wx.vent=e.target.value;
+    $('#wprec').onchange=e=>wx.precip=e.target.value;
+    $('#wxAuto').onclick=()=>{ wx.manuel=false; wx.auto=true; renderWx(); };
+    return;
+  }
+  box.innerHTML=`
+    <div class="wx-addr">📍 <b>Camions Avantage</b> · ${siteAddr}</div>
+    <div class="wx-main">
+      <span class="wx-ic">${wx.icon}</span>
+      <div><div class="wx-temp">${wx.temp} °C</div><div class="wx-cond">${wx.cond}</div></div>
+      <div class="wx-grid"><span>Vent <b>${wx.vent}</b></span><span>Précip. <b>${wx.precip}</b></span><span>Humidité <b>${wx.hum}</b></span></div>
+    </div>
+    <div class="wx-foot"><span>⟳ Relevé automatique à ${wx.heure} · Environnement Canada (selon l'adresse du site)</span>
+      <button class="ed" id="wxEdit">Ajuster</button><button class="rf" id="wxRef">Rafraîchir</button></div>`;
+  $('#wxRef').onclick=()=>{ // simulation d'un nouvel appel au service météo
+    const sc=[['☀️','Dégagé',-6,'0 mm'],['⛅','Partiellement nuageux',-3,'0 mm'],['☁️','Nuageux',-1,'0 mm'],['🌨️','Neige légère',-2,'3 cm'],['🌧️','Pluie',2,'5 mm']];
+    const p=sc[Math.floor(Math.random()*sc.length)];
+    wx.icon=p[0];wx.cond=p[1];wx.temp=p[2];wx.precip=p[3];
+    wx.vent=(8+Math.floor(Math.random()*20))+' km/h '+['N','NE','E','SE','S','SO','O','NO'][Math.floor(Math.random()*8)];
+    wx.hum=(55+Math.floor(Math.random()*35))+' %'; wx.heure=heureNow();
+    renderWx();
+  };
+  $('#wxEdit').onclick=()=>{ wx.manuel=true; wx.auto=false; renderWx(); };
+}
+renderWx();
 
 // ---- Activer un autre lot du WBS ----
 let pickOpen=false;

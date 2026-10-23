@@ -212,7 +212,7 @@ const projets=[
     {code:'E-00-COORD', nom:'Coordination et sécurité'}]},
 ];
 const projByCode=c=>projets.find(p=>p.code===c);
-const mkDay=(proj,acts)=>({proj:proj||'', arr:proj?'07:00':'', dep:proj?'15:30':'', p15am:!!proj, p15pm:!!proj, repas:proj?30:0, notes:'', acts:acts||[]});
+const mkDay=(proj,acts)=>({proj:proj||'', arr:proj?'07:00':'', dep:proj?'16:00':'', p15am:!!proj, p15pm:!!proj, repas:proj?30:0, notes:'', acts:acts||[]});
 let jours=[
   {cl:'Lun',cd:12,full:'Lundi 12 octobre', ...mkDay('23-003',[{act:'C-06.1-REMB',h:8}])},
   {cl:'Mar',cd:13,full:'Mardi 13 octobre', ...mkDay('23-003',[{act:'C-06.1-REMB',h:5},{act:'C-06.1-DRAIN',h:3}])},
@@ -225,9 +225,14 @@ let jours=[
 
 const clampH=v=>{v=parseFloat(v);return isNaN(v)||v<0?0:Math.round(v*4)/4;};
 const parseT=t=>{ if(!t)return null; const[a,b]=t.split(':').map(Number); return a*60+b; };
-function netHours(j){ const a=parseT(j.arr),d=parseT(j.dep); if(a==null||d==null||d<=a)return 0; return Math.max(0,(d-a)/60 - (j.repas||0)/60); }
+// Heures nettes travaillées = présence (départ − arrivée) − repas − pauses 15 min cochées.
+// Calcul basé uniquement sur les champs de temps, indépendant des activités.
+function netHours(j){ const a=parseT(j.arr),d=parseT(j.dep); if(a==null||d==null||d<=a)return 0;
+  const pauses=((j.p15am?15:0)+(j.p15pm?15:0));
+  return Math.max(0,(d-a)/60 - (j.repas||0)/60 - pauses/60); }
 const actsSum=j=>j.acts.reduce((s,a)=>s+clampH(a.h),0);
-const dayTotal=j=>actsSum(j);
+// Le total du jour = heures nettes (temps) si un projet est saisi, sinon 0.
+const dayTotal=j=>j.proj?netHours(j):0;
 const weekTotal=()=>jours.reduce((s,j)=>s+dayTotal(j),0);
 
 function renderRibbon(){
@@ -240,6 +245,8 @@ function renderRibbon(){
 }
 
 function actOptions(projCode,val){ const p=projByCode(projCode); if(!p)return ''; return `<option value="">Choisir l'activité</option>`+p.activites.map(a=>`<option value="${a.code}" ${val===a.code?'selected':''}>${a.code} · ${a.nom}</option>`).join(''); }
+// Options d'heures par pas de 15 min (5 h à 20 h)
+function timeOptions(selVal){ let o=''; for(let m=5*60;m<=20*60;m+=15){ const h=Math.floor(m/60),mm=m%60; const v=String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0'); const lbl=h+' h '+String(mm).padStart(2,'0'); o+=`<option value="${v}" ${selVal===v?'selected':''}>${lbl}</option>`; } return o; }
 
 function renderDay(){
   const j=jours[sel];
@@ -257,7 +264,7 @@ function renderDay(){
     body+=`
     <div class="card">
       <div class="card-h">Temps</div>
-      <div class="two"><div class="fld"><label>Arrivée</label><input type="time" id="darr" value="${j.arr}"></div><div class="fld"><label>Départ</label><input type="time" id="ddep" value="${j.dep}"></div></div>
+      <div class="two"><div class="fld"><label>Début du travail</label><input type="time" id="darr" step="900" value="${j.arr}"></div><div class="fld"><label>Fin du travail</label><input type="time" id="ddep" step="900" value="${j.dep}"></div></div>
       <div class="fld"><label>Repas (non payé)</label><select id="drepas">${repOpts}</select></div>
       <div class="toggles" style="margin-bottom:11px">
         <div class="tg ${j.p15am?'on':''}" id="dp15am"><div class="box">✓</div><span>Pause 15 min AM</span></div>
@@ -280,13 +287,13 @@ function renderDay(){
   }
   $('#dayBody').innerHTML=body;
 
-  $('#dproj').onchange=()=>{ if(locked)return; const v=$('#dproj').value; j.proj=v; if(v){ if(!j.arr)j.arr='07:00'; if(!j.dep)j.dep='15:30'; if(!j.repas)j.repas=30; if(j.acts.length===0)j.acts=[{act:'',h:0}]; } else { j.acts=[]; } renderDay(); renderRibbon(); };
+  $('#dproj').onchange=()=>{ if(locked)return; const v=$('#dproj').value; j.proj=v; if(v){ if(!j.arr)j.arr='07:00'; if(!j.dep)j.dep='16:00'; if(!j.repas)j.repas=30; if(j.acts.length===0)j.acts=[{act:'',h:0}]; } else { j.acts=[]; } renderDay(); renderRibbon(); };
   if(j.proj){
-    $('#darr').onchange=()=>{j.arr=$('#darr').value;renderDay();};
-    $('#ddep').onchange=()=>{j.dep=$('#ddep').value;renderDay();};
-    $('#drepas').onchange=()=>{j.repas=+$('#drepas').value;renderDay();};
-    $('#dp15am').onclick=()=>{if(locked)return;j.p15am=!j.p15am;$('#dp15am').classList.toggle('on',j.p15am);};
-    $('#dp15pm').onclick=()=>{if(locked)return;j.p15pm=!j.p15pm;$('#dp15pm').classList.toggle('on',j.p15pm);};
+    $('#darr').onchange=()=>{j.arr=$('#darr').value;renderDay();renderRibbon();};
+    $('#ddep').onchange=()=>{j.dep=$('#ddep').value;renderDay();renderRibbon();};
+    $('#drepas').onchange=()=>{j.repas=+$('#drepas').value;renderDay();renderRibbon();};
+    $('#dp15am').onclick=()=>{if(locked)return;j.p15am=!j.p15am;renderDay();renderRibbon();};
+    $('#dp15pm').onclick=()=>{if(locked)return;j.p15pm=!j.p15pm;renderDay();renderRibbon();};
     $('#dnotes').oninput=()=>{j.notes=$('#dnotes').value;};
     $('#daddAct').onclick=()=>{if(locked)return;j.acts.push({act:'',h:0});renderDay();};
     renderActs(j);
@@ -297,12 +304,12 @@ function renderActs(j){
   const box=$('#dacts'); box.innerHTML='';
   j.acts.forEach((a,i)=>{ const el=document.createElement('div'); el.className='act';
     el.innerHTML=`<select data-i="${i}" class="aact">${actOptions(j.proj,a.act)}</select>
-      <div class="stp"><button data-i="${i}" data-d="-0.5">−</button><input type="number" step="0.25" min="0" data-i="${i}" value="${a.h}"><button data-i="${i}" data-d="0.5">+</button></div>
+      <div class="stp"><button data-i="${i}" data-d="-0.25">−</button><input type="number" step="0.25" min="0" data-i="${i}" value="${a.h}"><button data-i="${i}" data-d="0.25">+</button></div>
       <button class="del" data-i="${i}" title="Retirer">✕</button>`;
     box.appendChild(el); });
   box.querySelectorAll('.aact').forEach(s=>s.onchange=()=>{if(locked)return;j.acts[+s.dataset.i].act=s.value;});
   box.querySelectorAll('.stp button').forEach(b=>b.onclick=()=>{if(locked)return;const i=+b.dataset.i;j.acts[i].h=clampH(j.acts[i].h+parseFloat(b.dataset.d));renderDay();});
-  box.querySelectorAll('.stp input').forEach(inp=>inp.oninput=()=>{if(locked)return;j.acts[+inp.dataset.i].h=clampH(inp.value);$('#dayTot').textContent=NUM(dayTotal(j))+' h';renderRibbon();summary();});
+  box.querySelectorAll('.stp input').forEach(inp=>inp.onchange=()=>{if(locked)return;j.acts[+inp.dataset.i].h=clampH(inp.value);renderDay();});
   box.querySelectorAll('.del').forEach(b=>b.onclick=()=>{if(locked)return;j.acts.splice(+b.dataset.i,1);if(j.acts.length===0)j.acts=[{act:'',h:0}];renderDay();});
 }
 
